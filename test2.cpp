@@ -155,20 +155,50 @@ void search_route(Airport* departure, Airport* arrival)
         dist[i] = inf;
         visited[i] = false;
 
-        if(temp == departure) 
-        {
-            start_index = i;
-        }
-        if(temp = arrival)
-        {
-            end_index = i;
-        }
+        if(temp == departure) start_index = i;
 
+        if(temp == arrival) end_index = i;
         temp = temp->next_airport;
     }
-
     dist[start_index] = 0;
 
+    while (true) {
+        int v = -1;
+        int min_dist = inf;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && dist[i] < min_dist) {
+                v = i;
+                visited[i] = true;
+                min_dist = dist[i];
+            }
+        }
+        if (vercities[v] == arrival) break;
+
+        if (v == -1 || dist[v] == INF) break;
+
+        Route* temp_route = vercities[v]->routes;
+        
+        if (temp_route == nullptr) return;
+
+        while (temp_route != nullptr)
+        {
+            Airport* neibour = temp_route->arr_airport_ptr;
+            int u = - 1;
+            for (int i = 0; i < n; i++ ) {
+                if (neibour->name == vercities[i]->name) {
+                    u = i;
+                    break;
+                }
+            }
+            if (u!=-1 && visited[u] == false) {
+                if (dist[v] + temp_route->distance < dist[u]) {
+                    dist[u] = dist[v]+temp_route->distance;
+                }
+            }//
+            temp_route = temp_route->next_route;
+        }
+
+    }
 
     /*
     берем начальный узел, у него дистанция 0
