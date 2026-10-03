@@ -145,7 +145,7 @@ void search_route(Airport* departure, Airport* arrival)
     bool* visited = new bool[n];
     int* dist = new int[n];
 
-    Airport* temp = departure;
+    Airport* temp = main_ptr;
     int start_index = -1;
     int end_index = -1;
     int inf = 100000000;
@@ -154,14 +154,19 @@ void search_route(Airport* departure, Airport* arrival)
         vercities[i] = temp;
         dist[i] = inf;
         visited[i] = false;
-
-        if(temp == departure) start_index = i;
-
-        if(temp == arrival) end_index = i;
-        temp = temp->next_airport;
+  
+        if(temp == departure) 
+        {
+            start_index = i;
+        }
+        if(temp == arrival)
+        {
+            end_index = i;
+        }
     }
-    dist[start_index] = 0;
 
+    dist[start_index] = 0;
+    int u = - 1;
     while (true) {
         int v = -1;
         int min_dist = inf;
@@ -174,16 +179,16 @@ void search_route(Airport* departure, Airport* arrival)
         }
         if (vercities[v] == arrival) break;
 
-        if (v == -1 || dist[v] == INF) break;
+        if (v == -1 || dist[v] == inf) break;
 
         Route* temp_route = vercities[v]->routes;
         
         if (temp_route == nullptr) return;
-
+        
         while (temp_route != nullptr)
         {
             Airport* neibour = temp_route->arr_airport_ptr;
-            int u = - 1;
+            
             for (int i = 0; i < n; i++ ) {
                 if (neibour->name == vercities[i]->name) {
                     u = i;
@@ -194,18 +199,32 @@ void search_route(Airport* departure, Airport* arrival)
                 if (dist[v] + temp_route->distance < dist[u]) {
                     dist[u] = dist[v]+temp_route->distance;
                 }
-            }//
+            }
+            visited[u] = true;//
             temp_route = temp_route->next_route;
         }
-
     }
 
-    /*
-    берем начальный узел, у него дистанция 0
-    у остальных дистанция бесконечность
-    смотрим на соседей узла 
-        складываем текущую дистанцию и путь до соседа
-        сравниваем суммарную дистанцию и текущую дистанцию узла
+   
 
-    */
-}
+    Route* current_route = vercities[u]->routes;
+    while(current_route != nullptr){
+        Airport* neighbour = current_route->arr_airport_ptr;
+        int v = -1;
+        for(int i = 0; i<n; i++)
+        {
+            if(vercities[i] == neighbour)
+            {
+                v = i;
+                break;
+            }
+        }
+        if (v != -1 && !visited[v]) {
+                // Если путь через текущий аэропорт 'u' короче, чем то, что записано у соседа 'v'
+                if (dist[u] + current_route->distance < dist[v]) {
+                    dist[v] = dist[u] + current_route->distance;
+                }
+            }
+            current_route = current_route->next_route; // Переходим к следующему рейсу
+        }
+    }
