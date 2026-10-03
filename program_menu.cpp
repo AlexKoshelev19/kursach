@@ -1,5 +1,5 @@
 #include "test2.h"
-
+void create_airport_mode();
 using namespace std;
 
 void draw_menu(int index, string page_choice[], int size) {
@@ -53,16 +53,45 @@ void greeting_menu(){
     do{
         index = choice_menu(page_choice, message, size);
         switch (index){
-            case 0: page_choice[index]; break;
-            case 1:page_choice[index]; break;
-            case 2:page_choice[index]; break;
-            case 3:page_choice[index]; break;
+            case 0: create_airport_mode(); break;
+            case 1: page_choice[index]; break;
+            case 2: page_choice[index]; break;
+            case 3: page_choice[index]; break;
             case -1: break;
         }
         
     } while(index != -1);
     return; 
 }
+void create_airport_mode()
+{
+    string message = "Для создания аэропорта вам необходимо ввести данные в следующие поля: Код аэропорта, название, город, страну ";
+    cout << message << endl;
+
+    cout << endl << " Введите название аэропорта: ";
+    string name_airport;
+    getline(cin, name_airport);
+
+    cout << endl << " Введите код аэропорта: ";
+    string code_airport;
+    getline(cin, code_airport);
+
+    cout << endl << " Введите город аэропорта: ";
+    string city_airport;
+    getline(cin, city_airport);
+
+    cout << endl << " Введите город аэропорта: ";
+    string country_airport;
+    getline(cin, country_airport);
+
+    create_airport(name_airport, city_airport, country_airport, code_airport); 
+
+    Airport* temp = find_Airport(code_airport);
+    print_Airport(temp);
+    
+}
+
+
 
 int main() {
    

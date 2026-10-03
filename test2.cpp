@@ -29,13 +29,15 @@ struct Route{
 
 Airport* main_ptr;
 
-Airport* create_airport(string name, string city, string country, string code)
+void create_airport(string name, string city, string country, string code)
 {
     Airport* new_node = new Airport;
     new_node->name = name;
     new_node->city = city;
     new_node->country = country;
     new_node->code = code;
+    new_node->routes = nullptr;
+    new_node->next_airport = nullptr;
     if(main_ptr == nullptr)
     {
         main_ptr = new_node;
@@ -49,7 +51,7 @@ Airport* create_airport(string name, string city, string country, string code)
         }
         temp->next_airport = new_node;
     }
-    return new_node;
+    return ;
 }
 
 Route* create_route(string departure, string arrival, int distance, int flight_time, Airport* dep_airport_ptr, Airport* arr_airport_ptr)
