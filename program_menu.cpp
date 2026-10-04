@@ -46,7 +46,7 @@ int choice_menu(string page_choice[], string message, int size)
 }
 
 void greeting_menu(){
-    string page_choice[] = {"Create plane", "Create route", "Delete airplane", "Delete route"};
+    string page_choice[] = {"Create plane", "Create route", "Загрузить данные из файла ", "Delete airplane", "Delete route"};
     int size = sizeof(page_choice) / sizeof(page_choice[0]);
     string message = "Здравствуйте!\n Данная программа позволяет создавать транспортную сеть аэропортов. Вы можете создать отдельно аэропорты и соединять их маршрутами. При первом запуске программе, рекомендую ознакомиться с инструкцией и далее следовать сообщениям на экране.";
     int index=0;
@@ -55,8 +55,9 @@ void greeting_menu(){
         switch (index){
             case 0: create_airport_mode(); break;
             case 1: page_choice[index]; break;
-            case 2: page_choice[index]; break;
+            case 2: file_mode(); break;
             case 3: page_choice[index]; break;
+            case 4: page_choice[index]; break;
             case -1: break;
         }
         
@@ -91,6 +92,28 @@ void create_airport_mode()
     
 }
 
+
+void file_mode(){
+    string page_choice[] = {"Загрузить данные из файла", "Выйти в главное меню"};
+    int size = sizeof(page_choice) / sizeof(page_choice[0]);
+    string message = "Для загрузки транспортной сети убедитесь в наличии файла transport_net.txt в директории программы.";
+    int index=0;
+    do{
+        index = choice_menu(page_choice, message, size);
+        switch (index){
+            case 0: system("cls"); cout << "Здесь будет работа с файлами"; break;
+            case 1:  break;
+            case -1: break;
+        }
+   } while(index != -1);
+    return; 
+}
+
+
+void work_transport_net()
+{
+    
+}
 
 
 int main() {

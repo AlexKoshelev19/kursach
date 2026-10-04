@@ -17,3 +17,4 @@ bool is_direct_route(Airport* departure, Airport* arrival);
 Airport* find_Airport(string code);
 Route* create_route(string departure, string arrival, int distance, int flight_time, Airport* dep_airport_ptr, Airport* arr_airport_ptr);
 void create_airport(string name, string city, string country, string code);
+void file_mode();
