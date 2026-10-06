@@ -63,7 +63,7 @@ Route* create_route(string departure, string arrival, int distance, int flight_t
     new_edge->flight_time = flight_time;
     new_edge->dep_airport_ptr = dep_airport_ptr;
     new_edge->arr_airport_ptr = arr_airport_ptr;
-
+    // добавить проверку на наличие маршрута, если уже создан, просто вывести информацию о маршруте
     if(dep_airport_ptr != nullptr && arr_airport_ptr != nullptr)
     {
         if(dep_airport_ptr->routes == nullptr)
@@ -123,6 +123,18 @@ void print_Airport(Airport* current)
     }
 
     cout << endl;
+}
+
+void print_route(Airport* dep_airport) {
+    //считаем что указатели прошли проверки(такие аэропорты существуют
+    Route * temp = dep_airport->routes;
+    while (temp != nullptr) {
+        cout << " " << temp->departure << endl;
+        cout << " " << temp->arrival << endl;
+        cout << " " << temp->distance << endl;
+        cout << " " << temp->flight_time << endl;
+        temp = temp->next_route;
+    }
 }
 
 int count_of_Airport()

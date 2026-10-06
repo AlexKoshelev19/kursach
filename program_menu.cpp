@@ -109,11 +109,101 @@ void file_mode(){
     return; 
 }
 
+void create_route_mode()
+{
+    string message = "Для создания маршрута вам необходимо ввести данные об аэропортах отправления и назначения, продолжительность полета и расстояние. ";
+    cout << message << endl;
+
+    cout << endl << "Введите название аэропорта отправления: ";
+    string dep_airport;
+    getline(cin, dep_airport);
+    Airport* dep_airport_ptr = find_Airport(dep_airport);
+
+    cout << endl << "Введите название аэропорта назначения: ";
+    string arr_airport;
+    getline(cin, arr_airport);
+    Airport* arr_airport_ptr = find_Airport(arr_airport);
+
+    cout << endl << "Введите расстояние между аэропортами: ";
+    int distance;
+    cin >> distance;
+
+    cout << endl << "Введите продолжительность полета: ";
+    int flight_time;
+    cin >> flight_time;
+
+    Route* temp = create_route(dep_airport, arr_airport, distance, flight_time, dep_airport_ptr, arr_airport_ptr);
+}
+
+
+
+
 
 void work_transport_net()
 {
-    
+    string page_choice[] = {"удалить аэропорт", "удалить маршрут", "редактировать информацию об аэропорте", "вывести все маршруты для выбранного аэропорта",  "	определить наличие прямого маршрута между двумя аэропортами", "определить возможность добраться из одного аэропорта в другой с пересадками"};
+    int size = sizeof(page_choice) / sizeof(page_choice[0]);
+    string message = "В данном разделе вы можете: ";
+    int index=0;
+    do{
+        index = choice_menu(page_choice, message, size);
+        switch (index){
+            case 0: system("cls"); cout << "Здесь будет удаление аэропорта"; break;
+            case 1: system("cls"); cout << "Здесь будет удаление маршрута"; break;
+            case 2: system("cls"); cout << "Здесь будет редактирование"; break;
+            case 3: system("cls"); cout << "Здесь будет определение прямого маршрута"; break;
+            case 4: system("cls"); cout << "Здесь будет определение маршрута с пересадками"; break;
+            case 5: system("cls"); cout << "Здесь будет вывод всех маршрутов"; break;break;
+            case -1: break;
+        }
+    } while(index != -1);
+    return;
 }
+
+
+void route_mode(int code) {
+    string message = "Для удаления маршрута введите: ";
+    cout << message << endl;
+    cout << endl << "Введите название аэропорта отправления: ";
+    string dep_airport;
+    getline(cin, dep_airport);
+    Airport* dep_airport_ptr = find_Airport(dep_airport);
+
+    cout << endl << "Введите название аэропорта назначения: ";
+    string arr_airport;
+    getline(cin, arr_airport);
+    Airport* arr_airport_ptr = find_Airport(arr_airport);
+    switch (code) {
+        case 1:break; //удаление маршрута
+        case 2:break; //определение прямого маршрута между аэропортами
+        case 3:break; //определение маршрута между аэропортами с пересадками
+        case 4:break; //вывод
+    }
+    // если все проверки пройдены, запихнуть функцию удаления маршрута
+}
+
+void print_routes(int code){
+
+
+    cout << endl << "Введите название аэропорта отправления: ";
+    string dep_airport;
+    getline(cin, dep_airport);
+    Airport* dep_airport_ptr = find_Airport(dep_airport);
+
+    cout << endl << "Введите название аэропорта назначения: ";
+    string arr_airport;
+    getline(cin, arr_airport);
+    Airport* arr_airport_ptr = find_Airport(arr_airport);
+
+    switch (code)
+    {
+        case 1: break;
+        case 2: break;
+        case 3: break;
+    }
+}
+
+
 
 
 int main() {
