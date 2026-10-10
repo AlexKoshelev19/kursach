@@ -93,16 +93,19 @@ void create_airport_mode()
 }
 
 
-void file_mode(){
+void file_mode()
+{
     string page_choice[] = {"Загрузить данные из файла", "Выйти в главное меню"};
     int size = sizeof(page_choice) / sizeof(page_choice[0]);
     string message = "Для загрузки транспортной сети убедитесь в наличии файла transport_net.txt в директории программы.";
     int index=0;
-    do{
+    do
+    {
         index = choice_menu(page_choice, message, size);
-        switch (index){
+        switch (index)
+        {
             case 0: system("cls"); cout << "Здесь будет работа с файлами"; break;
-            case 1:  break;
+            case 1:  return;
             case -1: break;
         }
    } while(index != -1);
