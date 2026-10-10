@@ -18,8 +18,8 @@ struct Airport{
 struct Route{
     string departure;
     string arrival;
-    int distance;
-    int flight_time;
+    string distance;
+    string flight_time;
 
     Airport* dep_airport_ptr;
     Airport* arr_airport_ptr;
@@ -29,9 +29,27 @@ struct Route{
 
 Airport* main_ptr;
 
+wstring utf8_to_wstring(const string& str) {
+    if (str.empty()) return L"";
+    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), nullptr, 0);
+    wstring result(size, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int)str.size(), &result[0], size);
+    return result;
+}
+
+string wstring_to_utf8(const wstring& wstr) {
+    if (wstr.empty()) return "";
+    int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), nullptr, 0, nullptr, nullptr);
+    string result(size, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), (int)wstr.size(), &result[0], size, nullptr, nullptr);
+    return result;
+}
+
+
 bool is_valid_code(const string& code) {
-    regex name_regex(R"(^[A-Z]{3}$)");
-    if (regex_match(code, name_regex)) {
+    wstring w_code = utf8_to_wstring(code);
+    static const wregex name_regex(LR"(^[A-Z]{3}$)");
+    if (regex_match(w_code, name_regex)) {
         return true;
     }
     else {
@@ -42,8 +60,9 @@ bool is_valid_code(const string& code) {
 
 
 bool is_valid_word(const string& word) {
-    regex name_regex(R"(^[А-ЯЁа-яё\s-]{1,30}$)");
-    if (regex_match(word, name_regex)) {
+    wstring w_word = utf8_to_wstring(word);
+    static const wregex name_regex(LR"(^[А-ЯЁа-яё\s-]{1,30}$)");
+    if (regex_match(w_word, name_regex)) {
         return true;
     }
     else {
@@ -51,6 +70,19 @@ bool is_valid_word(const string& word) {
         return false;
     }
 }
+
+bool is_valid_digit(const string& digit) {
+    wstring w_digit = utf8_to_wstring(digit);
+    static const wregex name_regex(LR"(^[0-9]{1,30}$)");
+    if (regex_match(w_digit, name_regex)) {
+        return true;
+    }
+    else {
+        cout << "Ошибка! Строка должна содержать цифры (до 30 симв.)! Повторите попытку: ";
+        return false;
+    }
+}
+
 
 
 string good_scan(bool (*is_valid)(const string&)) {
@@ -86,15 +118,16 @@ void create_airport(string name, string city, string country, string code)
     return ;
 }
 
-Route* create_route(string departure, string arrival, int distance, int flight_time, Airport* dep_airport_ptr, Airport* arr_airport_ptr)
+Route* create_route(Airport* dep_airport_ptr, Airport* arr_airport_ptr, string distance, string flight_time)
 {
     Route* new_edge = new Route;
-    new_edge->departure = departure;
-    new_edge->arrival = arrival;
-    new_edge->distance = distance;
-    new_edge->flight_time = flight_time;
     new_edge->dep_airport_ptr = dep_airport_ptr;
     new_edge->arr_airport_ptr = arr_airport_ptr;
+    new_edge->departure = dep_airport_ptr->name;
+    new_edge->arrival = arr_airport_ptr->name;
+    new_edge->distance = distance;
+    new_edge->flight_time = flight_time;
+    
     new_edge->next_route= nullptr;
     // добавить проверку на наличие маршрута, если уже создан, просто вывести информацию о маршруте
     if(dep_airport_ptr != nullptr && arr_airport_ptr != nullptr)
@@ -245,8 +278,8 @@ void search_route(Airport* departure, Airport* arrival)
                 }
             }
             if (u!=-1 && visited[u] == false) {
-                if (dist[v] + temp_route->distance < dist[u]) {
-                    dist[u] = dist[v]+temp_route->distance;
+                if (dist[v] + stoi(temp_route->distance) < dist[u]) {
+                    dist[u] = dist[v]+stoi(temp_route->distance);
                 }
             }
             visited[u] = true;//
@@ -270,63 +303,70 @@ void search_route(Airport* departure, Airport* arrival)
         }
         if (v != -1 && !visited[v]) {
                 // Если путь через текущий аэропорт 'u' короче, чем то, что записано у соседа 'v'
-                if (dist[u] + current_route->distance < dist[v]) {
-                    dist[v] = dist[u] + current_route->distance;
+                if (dist[u] + stoi(current_route->distance) < dist[v]) {
+                    dist[v] = dist[u] + stoi(current_route->distance);
                 }
             }
             current_route = current_route->next_route; // Переходим к следующему рейсу
         }
     }
 
-void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
+/*void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
 {
-    Route* temp = dep_airport->routes;
-    Route* deleted;
+    if (dep_airport == nullptr) return;
+
+    // Удаляем ВСЕ маршруты
     if (arr_airport == nullptr) {
+        Route* temp = dep_airport->routes;
         while (temp != nullptr) {
-            deleted = temp;
+            Route* deleted = temp;
             temp = temp->next_route;
             delete deleted;
         }
         dep_airport->routes = nullptr;
         return;
     }
+
+    // Удаляем ОДИН конкретный маршрут
     Route* temp = dep_airport->routes;
     Route* prev = nullptr;
 
     while (temp != nullptr) {
         if (temp->arr_airport_ptr == arr_airport) {
-            if (prev == nullptr)
-                dep_airport->routes = temp->next_route;
-            else
-                prev->next_route = temp->next_route;
+            if (prev == nullptr) {
+                dep_airport->routes = temp->next_route;   // удаляем первый
+            } else {
+                prev->next_route = temp->next_route;     // удаляем из середины/конца
+            }
             delete temp;
             return;
         }
         prev = temp;
         temp = temp->next_route;
     }
-}
-
+    // если маршрут не найден — ничего не делаем
+}*/
 
 
 void delete_airport(Airport* name_airport)
 {
     if (name_airport == nullptr) return;
-    delete_route(name_airport);
-    if (main_ptr == name_airport) {
 
+    // Удаляем все исходящие маршруты
+    //delete_route(name_airport);   // arr_airport по умолчанию = nullptr
+
+    // Удаляем аэропорт из списка
+    if (main_ptr == name_airport) {
         main_ptr = name_airport->next_airport;
     } else {
-
         Airport* pred_ptr = main_ptr;
         while (pred_ptr != nullptr && pred_ptr->next_airport != name_airport) {
             pred_ptr = pred_ptr->next_airport;
         }
-
         if (pred_ptr != nullptr) {
             pred_ptr->next_airport = name_airport->next_airport;
         }
     }
+
     delete name_airport;
 }

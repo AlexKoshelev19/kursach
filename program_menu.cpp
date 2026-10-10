@@ -65,7 +65,7 @@ void greeting_menu(){
             case 0: create_airport_mode(); break;
             case 1: create_route_mode(); break;
             case 2: file_mode(); break;
-            case 3: page_choice[index]; break;
+            case 3: delete_airplane_mode(); break;
             case 4: page_choice[index]; break;
             case -1: break;
             default: continue;
@@ -119,20 +119,19 @@ void create_airport_mode(Airport* &temp)
         cout << message << endl;
 
         cout << endl << " Введите название аэропорта: ";
-        string name_airport;
-        getline(cin, name_airport);
+        string name_airport = good_scan(is_valid_word);
+        
 
         cout << endl << " Введите код аэропорта: ";
-        string code_airport;
-        getline(cin, code_airport);
+        string code_airport = good_scan(is_valid_code);;
 
         cout << endl << " Введите город аэропорта: ";
-        string city_airport;
-        getline(cin, city_airport);
+        string city_airport = good_scan(is_valid_word);
+        
 
         cout << endl << " Введите страну аэропорта: ";
-        string country_airport;
-        getline(cin, country_airport);
+        string country_airport = good_scan(is_valid_word);
+        
 
         create_airport(name_airport, city_airport, country_airport, code_airport);
 
@@ -160,9 +159,9 @@ void create_route_mode()
     string message = "Для создания маршрута вам необходимо ввести данные об аэропортах отправления и назначения, продолжительность полета и расстояние. ";
     cout << message << endl;
     do {
-        string dep_airport;
+        
         cout << endl << "Введите название аэропорта отправления: ";
-        getline(cin, dep_airport);
+        string dep_airport = good_scan(is_valid_word);
         Airport* dep_airport_ptr = find_Airport(dep_airport);
 
 
@@ -178,20 +177,19 @@ void create_route_mode()
                     case 0: system("cls"); create_airport_mode(dep_airport_ptr); getch(); index = -1; break;
                     case 1:  return;
                     case -1: break;
-                     default: continue;
+                    default: continue;
                 }
             } while(index != -1);
         }
 
         cout << endl << "Введите название аэропорта назначения: ";
-        string arr_airport;
-        getline(cin, arr_airport);
+        string arr_airport = good_scan(is_valid_word);
         Airport* arr_airport_ptr = find_Airport(arr_airport);
 
 
         if (arr_airport_ptr == nullptr) {
 
-            string page_choice[] = {"Создать аэропорт ", "Выйти в главное меню"};
+            string page_choice[] = {"Создать аэропорт", "Ввести заново", "Выйти в главное меню"};
             int size = sizeof(page_choice) / sizeof(page_choice[0]);
             string message = "Аэропорта с названием " + dep_airport + " нет, желаете создать аэропорт?.";
             int index=0;
@@ -199,25 +197,24 @@ void create_route_mode()
                 index = choice_menu(page_choice, message, size);
                 switch (index){
                     case 0: system("cls"); create_airport_mode(arr_airport_ptr); getch(); index = -1; break;
-                    case 1:  return;
-                    case -1: break;
+                    case 1: return;
+                    case 2: break;
                     default: continue;
                 }
-            } while(index != -1);
+            } while(index != 2);
         }
 
 
 
         cout << dep_airport_ptr << endl;
         cout << endl << "Введите расстояние между аэропортами: ";
-        int distance;
-        cin >> distance;
+        string distance = good_scan(is_valid_digit);
+        
 
         cout << endl << "Введите продолжительность полета: ";
-        int flight_time;
-        cin >> flight_time;
+        string flight_time = good_scan(is_valid_word);
 
-        Route* temp = create_route(dep_airport, arr_airport, distance, flight_time, dep_airport_ptr, arr_airport_ptr);
+        Route* temp = create_route(dep_airport_ptr, arr_airport_ptr, distance, flight_time );
         cout << "Маршрут создан!" << endl;
         print_route(dep_airport_ptr);
 
@@ -231,8 +228,7 @@ void create_route_mode()
 
 void delete_airplane_mode() {
     cout << "Введите название аэропорта, который вы хотите удалить: ";
-    string airport_name;
-    cin >> airport_name;
+    string airport_name = good_scan(is_valid_word);
     Airport* temp = find_Airport(airport_name);
     if (temp == nullptr) {
         cout << "Введите заново: ";
@@ -254,13 +250,11 @@ void route_mode(int code) {
     string message = "Для удаления маршрута введите: ";
     cout << message << endl;
     cout << endl << "Введите название аэропорта отправления: ";
-    string dep_airport;
-    getline(cin, dep_airport);
+    string dep_airport = good_scan(is_valid_word);
     Airport* dep_airport_ptr = find_Airport(dep_airport);
 
     cout << endl << "Введите название аэропорта назначения: ";
-    string arr_airport;
-    getline(cin, arr_airport);
+    string arr_airport  = good_scan(is_valid_word);
     Airport* arr_airport_ptr = find_Airport(arr_airport);
     switch (code) {
         case 1:break; //удаление маршрута
@@ -308,13 +302,11 @@ void print_routes(int code){
 
 
     cout << endl << "Введите название аэропорта отправления: ";
-    string dep_airport;
-    getline(cin, dep_airport);
+    string dep_airport = good_scan(is_valid_word);
     Airport* dep_airport_ptr = find_Airport(dep_airport);
 
     cout << endl << "Введите название аэропорта назначения: ";
-    string arr_airport;
-    getline(cin, arr_airport);
+    string arr_airport  = good_scan(is_valid_word);
     Airport* arr_airport_ptr = find_Airport(arr_airport);
 
     switch (code)

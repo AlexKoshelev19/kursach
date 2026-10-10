@@ -51,7 +51,7 @@ void download_from_file()
             create_airport(fields[1], "NULL", "NULL","NULL");
         }
         temp_arr = find_Airport(fields[1]);
-        Route* temp_route = create_route(fields[0], fields[1], fields[2], fields[3], temp_dep, temp_arr );
+        Route* temp_route = create_route( temp_dep, temp_arr, fields[2], fields[3]  );
     }
 }
 
