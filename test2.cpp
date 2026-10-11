@@ -164,10 +164,15 @@ bool is_direct_route(Airport* departure, Airport* arrival) //true - yes
     {
         if(temp_route->arrival == arrival->name)
         {
+            cout << " " << temp_route->departure << endl;
+            cout << " " << temp_route->arrival << endl;
+            cout << " " << temp_route->distance << endl;
+            cout << " " << temp_route->flight_time << endl;
             return true;
         }
         temp_route = temp_route->next_route;
     }
+    cout << "Прямой маршрут не найден, попробуйте найти маршрут с пересадками";
     return false;
 }
 
@@ -193,7 +198,7 @@ void print_Airport(Airport* current) {
     cout << endl;
 }
 
-void print_route(Airport* dep_airport) {
+void print_routes(Airport* dep_airport) {
     //считаем что указатели прошли проверки(такие аэропорты существуют
     Route * temp = dep_airport->routes;
     while (temp != nullptr) {
@@ -222,96 +227,120 @@ int count_of_Airport()
 
 void search_route(Airport* departure, Airport* arrival)
 {
+    if (departure == nullptr || arrival == nullptr) {
+        cout << "Аэропорт не найден!\n";
+        return;
+    }
+
     int n = count_of_Airport();
-    Airport** vercities   = new Airport*[n];
+    if (n == 0) return;
+
+    Airport** vertices = new Airport*[n];
     bool* visited = new bool[n];
     int* dist = new int[n];
+    int* parent = new int[n];          // для восстановления пути (опционально)
 
+    const int INF = 1000000000;
+
+    // ---------- Инициализация ----------
     Airport* temp = main_ptr;
     int start_index = -1;
     int end_index = -1;
-    int inf = 100000000;
 
-    for(int i = 0; i < n; i ++){ //инициализация вспомогательных массивов
-        vercities[i] = temp;
-        dist[i] = inf;
+    for (int i = 0; i < n; i++) {
+        vertices[i] = temp;
+        dist[i] = INF;
         visited[i] = false;
-  
-        if(temp == departure) 
-        {
-            start_index = i;
-        }
-        if(temp == arrival)
-        {
-            end_index = i;
-        }
+        parent[i] = -1;
+
+        if (temp == departure) start_index = i;
+        if (temp == arrival)   end_index = i;
+
+        temp = temp->next_airport;     
+    }
+
+    if (start_index == -1 || end_index == -1) {
+        cout << "Один из аэропортов не найден в списке!\n";
+        delete[] vertices;
+        delete[] visited;
+        delete[] dist;
+        delete[] parent;
+        return;
     }
 
     dist[start_index] = 0;
-    int u = - 1;
-    while (true) {
+
+    // ---------- Основной цикл Дейкстры ----------
+    for (int iter = 0; iter < n; iter++) {
+        // 1. Находим непосещённую вершину с минимальным dist
         int v = -1;
-        int min_dist = inf;
+        int min_dist = INF;
+
         for (int i = 0; i < n; i++) {
             if (!visited[i] && dist[i] < min_dist) {
-                v = i;
-                visited[i] = true;
                 min_dist = dist[i];
+                v = i;
             }
         }
-        if (vercities[v] == arrival) break;
 
-        if (v == -1 || dist[v] == inf) break;
+        if (v == -1) break;            // больше нет достижимых вершин
+        if (v == end_index) break;     // уже нашли путь до цели
 
-        Route* temp_route = vercities[v]->routes;
-        
-        if (temp_route == nullptr) return;
-        
-        while (temp_route != nullptr)
-        {
-            Airport* neibour = temp_route->arr_airport_ptr;
-            
-            for (int i = 0; i < n; i++ ) {
-                if (neibour->name == vercities[i]->name) {
+        visited[v] = true;             // помечаем только сейчас
+
+        // 2. Релаксация рёбер
+        Route* route = vertices[v]->routes;
+        while (route != nullptr) {
+            // ищем индекс соседа
+            int u = -1;
+            for (int i = 0; i < n; i++) {
+                if (vertices[i] == route->arr_airport_ptr) {
                     u = i;
                     break;
                 }
             }
-            if (u!=-1 && visited[u] == false) {
-                if (dist[v] + stoi(temp_route->distance) < dist[u]) {
-                    dist[u] = dist[v]+stoi(temp_route->distance);
+
+            if (u != -1 && !visited[u]) {
+                int weight = stoi(route->distance);
+                if (dist[v] + weight < dist[u]) {
+                    dist[u] = dist[v] + weight;
+                    parent[u] = v;     // запоминаем, откуда пришли
                 }
             }
-            visited[u] = true;//
-            temp_route = temp_route->next_route;
+            route = route->next_route;
         }
     }
 
-   
+    // ---------- Вывод результата ----------
+    if (dist[end_index] == INF) {
+        cout << "Путь не найден.\n";
+    } else {
+        cout << "Кратчайшее расстояние: " << dist[end_index] << endl;
 
-    Route* current_route = vercities[u]->routes;
-    while(current_route != nullptr){
-        Airport* neighbour = current_route->arr_airport_ptr;
-        int v = -1;
-        for(int i = 0; i<n; i++)
-        {
-            if(vercities[i] == neighbour)
-            {
-                v = i;
-                break;
-            }
+        // Восстановление пути (по желанию)
+        cout << "Путь: ";
+        vector<string> path;
+        for (int cur = end_index; cur != -1; cur = parent[cur]) {
+            path.push_back(vertices[cur]->name);
         }
-        if (v != -1 && !visited[v]) {
-                // Если путь через текущий аэропорт 'u' короче, чем то, что записано у соседа 'v'
-                if (dist[u] + stoi(current_route->distance) < dist[v]) {
-                    dist[v] = dist[u] + stoi(current_route->distance);
-                }
-            }
-            current_route = current_route->next_route; // Переходим к следующему рейсу
+        reverse(path.begin(), path.end());
+
+        for (size_t i = 0; i < path.size(); i++) {
+            cout << path[i];
+            if (i + 1 < path.size()) cout << " -> ";
         }
+        cout << endl;
     }
 
-/*void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
+    // ---------- Освобождение памяти ----------
+    delete[] vertices;
+    delete[] visited;
+    delete[] dist;
+    delete[] parent;
+}
+
+
+void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
 {
     if (dep_airport == nullptr) return;
 
@@ -344,8 +373,8 @@ void search_route(Airport* departure, Airport* arrival)
         prev = temp;
         temp = temp->next_route;
     }
-    // если маршрут не найден — ничего не делаем
-}*/
+    
+}
 
 
 void delete_airport(Airport* name_airport)
@@ -353,7 +382,7 @@ void delete_airport(Airport* name_airport)
     if (name_airport == nullptr) return;
 
     // Удаляем все исходящие маршруты
-    //delete_route(name_airport);   // arr_airport по умолчанию = nullptr
+    delete_route(name_airport);   // arr_airport по умолчанию = nullptr
 
     // Удаляем аэропорт из списка
     if (main_ptr == name_airport) {
@@ -367,6 +396,9 @@ void delete_airport(Airport* name_airport)
             pred_ptr->next_airport = name_airport->next_airport;
         }
     }
-
+    cout << "Аэропорт " << name_airport->name << " успешно удален!" << endl;
+    cout << "для выхода нажмите любую клавишу";
     delete name_airport;
+    getch(); 
+    system("cls");
 }

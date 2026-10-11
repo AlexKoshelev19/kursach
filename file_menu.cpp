@@ -4,54 +4,71 @@ void download_from_file()
 {
     cout << "Введите имя входного файла: ";
     string file_name;
+    getline(cin, file_name);
 
-    ifstream fin;
-    fin.open(file_name);
+    ifstream fin(file_name);
     if (!fin.is_open()) {
-        cout << "Ошибка открытия файла!";
+        cout << "Ошибка открытия файла!\n";
         return;
     }
+
     string line;
-    do {
-        getline(fin, line);
-        string fields[4];
-        int i =0;
 
-        size_t start = 0;
-        size_t end = line.find(',');
-        while (end!=string::npos) {
-            fields[i] = line.substr(start, end);
-            start= end+1;
-            end = line.find(',', start);
-            i++;
-        }
-        create_airport(fields[0],fields[1],fields[2],fields[3]);
-
-    }while (line != "EDGES\n");
+    // ========== Чтение аэропортов ==========
     while (getline(fin, line)) {
-        getline(fin, line);
-        string fields[4];
-        int i =0;
+        if (line == "NODES") continue;
+        if (line == "EDGES") break;          // разделитель разделов
+        if (line.empty()) continue;
 
+        string fields[4];
         size_t start = 0;
-        size_t end = line.find(',');
-        while (end!=string::npos) {
-            fields[i] = line.substr(start, end);
-            start= end+1;
-            end = line.find(',', start);
-            i++;
+        int i = 0;
+
+        // парсим первые 3 поля
+        for (; i < 3; ++i) {
+            size_t end = line.find(',', start);
+            if (end == string::npos) break;
+            fields[i] = line.substr(start, end - start);
+            start = end + 1;
         }
-        Airport* temp_dep;
-        Airport* temp_arr;
-        if (find_Airport(fields[0]) == nullptr) {
-            create_airport(fields[0], "NULL", "NULL","NULL");
+        fields[i] = line.substr(start);      // последнее поле
+
+        if (i == 3) {
+            create_airport(fields[0], fields[1], fields[2], fields[3]);
         }
-        temp_dep = find_Airport(fields[0]);
-        if (find_Airport(fields[1]) == nullptr) {
-            create_airport(fields[1], "NULL", "NULL","NULL");
-        }
-        temp_arr = find_Airport(fields[1]);
-        Route* temp_route = create_route( temp_dep, temp_arr, fields[2], fields[3]  );
     }
+
+    // ========== Чтение маршрутов ==========
+    while (getline(fin, line)) {
+        if (line.empty()) continue;
+
+        string fields[4];
+        size_t start = 0;
+        int i = 0;
+
+        for (; i < 3; ++i) {
+            size_t end = line.find(',', start);
+            if (end == string::npos) break;
+            fields[i] = line.substr(start, end - start);
+            start = end + 1;
+        }
+        fields[i] = line.substr(start);
+
+        if (i != 3) continue;                // строка повреждена
+        Airport* temp_dep = find_Airport(fields[0]);
+        if (temp_dep == nullptr) {
+            create_airport(fields[0], "NULL", "NULL", "NULL");
+            temp_dep = find_Airport(fields[0]);
+        }
+
+        Airport* temp_arr = find_Airport(fields[1]);
+        if (temp_arr == nullptr) {
+            create_airport(fields[1], "NULL", "NULL", "NULL");
+            temp_arr = find_Airport(fields[1]);
+        }
+        create_route(temp_dep, temp_arr, fields[2], fields[3]);
+    }
+    fin.close();
+    cout << "Данные успешно загружены.\n";
 }
 

@@ -28,3 +28,5 @@ bool is_valid_word(const string& word);
 bool is_valid_digit(const string& word);
 bool is_valid_code(const string& code);
 string good_scan(bool (*is_valid)(const string&));
+void delete_airplane_mode();
+void download_from_file();
