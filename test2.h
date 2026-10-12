@@ -31,5 +31,5 @@ string good_scan(bool (*is_valid)(const string&));
 void delete_airplane_mode();
 void download_from_file();
 void print_all_airports();
+void route_mode(int code);
 Airport* input_airport(const string& prompt);
-Airport* main_ptr;

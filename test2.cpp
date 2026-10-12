@@ -406,17 +406,21 @@ void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
         }
         prev = temp;
         temp = temp->next_route;
-    }
-
-
-    cout << "Маршрута не существует." << endl;
-    
+    }    
 }
 
 
 void delete_airport(Airport* name_airport)
 {
     if (name_airport == nullptr) return;
+
+    Airport* current = main_ptr;
+    while (current != nullptr) {
+        if (current != name_airport) {
+            delete_route(current, name_airport);  // удалить один конкретный маршрут
+        }
+        current = current->next_airport;
+    }
 
     // Удаляем все исходящие маршруты
     delete_route(name_airport);   // arr_airport по умолчанию = nullptr

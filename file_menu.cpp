@@ -3,9 +3,11 @@
 void download_from_file()
 {
     cout << "Введите имя входного файла: ";
-    string file_name = good_scan(is_valid_word);
+    string file_name;
+    cin >> file_name;
 
     ifstream fin(file_name);
+
     if (!fin.is_open()) {
         cout << "Ошибка открытия файла!\n";
         return;
@@ -83,11 +85,4 @@ void unloading_to_file(){
 
 
     ofstream fout;
-    fout.open(file_name);
-    Airport* temp_airport = main_ptr;
-    while(temp_airport != nullptr)
-    {
-
-    }
-    
 }
