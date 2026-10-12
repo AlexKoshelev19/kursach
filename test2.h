@@ -32,3 +32,4 @@ void delete_airplane_mode();
 void download_from_file();
 void print_all_airports();
 Airport* input_airport(const string& prompt);
+Airport* main_ptr;

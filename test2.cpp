@@ -98,6 +98,19 @@ string good_scan(bool (*is_valid)(const string&)) {
 
 void create_airport(string name, string city, string country, string code)
 {
+    Airport* temp = main_ptr;
+    while (temp != nullptr) {
+        if (temp->name == name) {
+            cout << "Ошибка: аэропорт с названием \"" << name << "\" уже существует!\n";
+            return;
+        }
+        if (temp->code == code) {
+            cout << "Ошибка: аэропорт с кодом \"" << code << "\" уже существует!\n";
+            return;
+        }
+        temp = temp->next_airport;
+    }
+
     Airport* new_node = new Airport;
     new_node->name = name;
     new_node->city = city;

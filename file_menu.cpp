@@ -3,8 +3,7 @@
 void download_from_file()
 {
     cout << "Введите имя входного файла: ";
-    string file_name;
-    getline(cin, file_name);
+    string file_name = good_scan(is_valid_word);
 
     ifstream fin(file_name);
     if (!fin.is_open()) {
@@ -14,7 +13,6 @@ void download_from_file()
 
     string line;
 
-    // ========== Чтение аэропортов ==========
     while (getline(fin, line)) {
         if (line == "NODES") continue;
         if (line == "EDGES") break;          // разделитель разделов
@@ -38,7 +36,6 @@ void download_from_file()
         }
     }
 
-    // ========== Чтение маршрутов ==========
     while (getline(fin, line)) {
         if (line.empty()) continue;
 
@@ -72,3 +69,25 @@ void download_from_file()
     cout << "Данные успешно загружены.\n";
 }
 
+
+void unloading_to_file(){
+    cout << "Введите имя входного файла: ";
+    string file_name = good_scan(is_valid_word);
+
+    ifstream fin(file_name);
+    if (!fin.is_open()) {
+        cout << "Ошибка открытия файла!\n";
+        return;
+    }
+
+
+
+    ofstream fout;
+    fout.open(file_name);
+    Airport* temp_airport = main_ptr;
+    while(temp_airport != nullptr)
+    {
+
+    }
+    
+}

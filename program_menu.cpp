@@ -55,22 +55,34 @@ int choice_menu(string page_choice[], string message, int size)
 
 
 void greeting_menu(){
-    string page_choice[] = {"Создать аэропорт", "Создать маршрут", "Работать с файлами ", "Удалить аэропорт", "Delete route", "Вывести все аэропорты" , "Загрузить данные из файла"};
+    string page_choice[] = {
+        "Создать аэропорт", 
+        "Создать маршрут",
+        "Работать с файлами ",
+        "Удалить аэропорт",
+        "Удалить маршрут", 
+        "Найти прямой маршрут между аэропортами",
+        "Найти маршрут с пересадками",
+        "Вывести все аэропорты" , 
+        "Загрузить данные из файла" };
+        
     int size = sizeof(page_choice) / sizeof(page_choice[0]);
     string message = "Здравствуйте!\n Данная программа позволяет создавать транспортную сеть аэропортов. Вы можете создать отдельно аэропорты и соединять их маршрутами. При первом запуске программе, рекомендую ознакомиться с инструкцией и далее следовать сообщениям на экране.";
     int index=0;
     do{
         index = choice_menu(page_choice, message, size);
-        switch (index){
+        switch (index) {
             case 0: create_airport_mode(); break;
-            case 1: create_route_mode(); break;
+            case 1: route_mode(4); break;          // создать маршрут
             case 2: file_mode(); break;
             case 3: delete_airplane_mode(); break;
-            case 4: page_choice[index]; break;
-            case 5: print_all_airports(); break;
-            case 6: download_from_file(); break;
+            case 4: route_mode(1); break;          // удалить маршрут
+            case 5: route_mode(2); break;          // прямой
+            case 6: route_mode(3); break;          // с пересадками
+            case 7: print_all_airports(); break;
+            case 8: download_from_file(); break;
             case -1: break;
-            default: continue;
+            default: break;
         }
     } while(index != -1);
     return; 
