@@ -19,10 +19,10 @@ Route* create_route( Airport* dep_airport_ptr, Airport* arr_airport_ptr, string 
 void create_airport(string name, string city, string country, string code);
 void file_mode();
 void create_route_mode();
-void print_route(Airport* dep_airport);
+void print_routes(Airport* dep_airport);
 void create_airport_mode();
 void create_airport_mode(Airport* &temp);
-void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr);
+void delete_route(Airport* dep_airport, Airport* arr_airport);
 void delete_airport(Airport* name_airport);
 bool is_valid_word(const string& word);
 bool is_valid_digit(const string& word);
@@ -30,3 +30,5 @@ bool is_valid_code(const string& code);
 string good_scan(bool (*is_valid)(const string&));
 void delete_airplane_mode();
 void download_from_file();
+void print_all_airports();
+Airport* input_airport(const string& prompt);

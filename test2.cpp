@@ -47,6 +47,7 @@ string wstring_to_utf8(const wstring& wstr) {
 
 
 bool is_valid_code(const string& code) {
+    if (code == "exit") return true;
     wstring w_code = utf8_to_wstring(code);
     static const wregex name_regex(LR"(^[A-Z]{3}$)");
     if (regex_match(w_code, name_regex)) {
@@ -60,6 +61,7 @@ bool is_valid_code(const string& code) {
 
 
 bool is_valid_word(const string& word) {
+    if (word == "exit") return true;
     wstring w_word = utf8_to_wstring(word);
     static const wregex name_regex(LR"(^[А-ЯЁа-яё\s-]{1,30}$)");
     if (regex_match(w_word, name_regex)) {
@@ -72,6 +74,7 @@ bool is_valid_word(const string& word) {
 }
 
 bool is_valid_digit(const string& digit) {
+    if(digit == "exit") return true;
     wstring w_digit = utf8_to_wstring(digit);
     static const wregex name_regex(LR"(^[0-9]{1,30}$)");
     if (regex_match(w_digit, name_regex)) {
@@ -190,12 +193,30 @@ void print_Airport(Airport* current) {
     if(temp == nullptr)
         cout << "\tОтсутстуют" << endl;
     else {
-        while(temp->next_route != nullptr)
+        while(temp != nullptr)
         {
-            cout << '\t' << temp->departure << endl;
+            cout << '\t' << temp->arrival << endl;
+            temp = temp->next_route;
         }
     }
     cout << endl;
+}
+
+void print_all_airports()
+{
+    Airport* temp = main_ptr;
+    if (temp == nullptr) {
+        cout << "Список аэропортов пуст.\n";
+        return;
+    }
+    cout << "-------------------------------------------------------" << endl;
+    while(temp != nullptr)
+    {
+        print_Airport(temp);
+        cout << "-------------------------------------------------------" << endl;
+        temp = temp->next_airport;
+    }
+    getch();
 }
 
 void print_routes(Airport* dep_airport) {
@@ -286,7 +307,7 @@ void search_route(Airport* departure, Airport* arrival)
         if (v == -1) break;            // больше нет достижимых вершин
         if (v == end_index) break;     // уже нашли путь до цели
 
-        visited[v] = true;             // помечаем только сейчас
+        visited[v] = true;             
 
         // 2. Релаксация рёбер
         Route* route = vertices[v]->routes;
@@ -373,6 +394,9 @@ void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
         prev = temp;
         temp = temp->next_route;
     }
+
+
+    cout << "Маршрута не существует." << endl;
     
 }
 
