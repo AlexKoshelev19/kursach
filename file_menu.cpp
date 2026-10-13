@@ -14,7 +14,7 @@ void download_from_file()
     }
 
     string line;
-
+    
     while (getline(fin, line)) {
         if (line == "NODES") continue;
         if (line == "EDGES") break;          // разделитель разделов
@@ -68,21 +68,79 @@ void download_from_file()
         create_route(temp_dep, temp_arr, fields[2], fields[3]);
     }
     fin.close();
-    cout << "Данные успешно загружены.\n";
+    cout << "Данные успешно загружены.\n нажмите любую кнопку";
+    getch();
+    system("cls"); return;
 }
 
 
-void unloading_to_file(){
-    cout << "Введите имя входного файла: ";
-    string file_name = good_scan(is_valid_word);
+void upload_to_file()
+{
+    cout << "Введите имя выходного файла: ";
+    string file_name;
+    getline(cin, file_name);
 
-    ifstream fin(file_name);
-    if (!fin.is_open()) {
-        cout << "Ошибка открытия файла!\n";
+    ofstream fout(file_name);
+    if (!fout.is_open()) {
+        cout << "Ошибка открытия файла для записи!\n";
         return;
     }
 
 
+    fout << "NODES\n";
 
-    ofstream fout;
+    Airport* temp = main_ptr;
+    if (temp == nullptr) {
+        cout << "Список аэропортов пуст!\n";
+    }
+
+    while (temp != nullptr) {
+        fout << temp->name << ","
+             << temp->city << ","
+             << temp->country << ","
+             << temp->code << "\n";
+        temp = temp->next_airport;   // ← обязательно!
+    }
+
+    fout << "EDGES\n";
+    temp = main_ptr;
+    while (temp != nullptr) {
+        Route* r = temp->routes;
+        while (r != nullptr) {
+            fout << r->dep_airport_ptr->name << ","
+                 << r->arr_airport_ptr->name << ","
+                 << r->distance << ","
+                 << r->flight_time << "\n";
+            r = r->next_route;
+        }
+        temp = temp->next_airport;
+    }
+
+    fout.close();
+    cout << "Данные успешно сохранены в \"" << file_name << "\".\n";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
