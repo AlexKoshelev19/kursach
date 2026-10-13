@@ -128,7 +128,7 @@ Route* create_route(Airport* dep_airport_ptr, Airport* arr_airport_ptr, string d
     if(dep_airport_ptr != nullptr && arr_airport_ptr != nullptr)
     {
         for (Route* t = dep_airport_ptr->routes; t != nullptr; t = t->next_route) {
-            if (t->arr_airport_ptr == arr) {
+            if (t->arr_airport_ptr == arr_airport_ptr) {
                 return nullptr;
             }
         }
@@ -223,12 +223,23 @@ void print_routes(Airport* dep_airport) {
     //считаем что указатели прошли проверки(такие аэропорты существуют
     Route * temp = dep_airport->routes;
     while (temp != nullptr) {
-        cout << " " << temp->dep_airport_ptr->name << endl;
-        cout << " " << temp->arr_airport_ptr->name << endl;
-        cout << " " << temp->distance << endl;
-        cout << " " << temp->flight_time << endl;
+        cout << "Отправление: " << temp->dep_airport_ptr->name << endl;
+        cout << "Прибытие: " << temp->arr_airport_ptr->name << endl;
+        cout << "Дальность: " << temp->distance << endl;
+        cout << "Время полета: " << temp->flight_time << endl;
         temp = temp->next_route;
     }
+}
+
+void print_all_routes(){
+    Airport* temp = main_ptr;
+    cout << "-------------------------------------------------------" << endl;
+    while(temp != nullptr){
+        print_routes(temp);
+        cout << "-------------------------------------------------------" << endl;
+        temp = temp->next_airport;
+    }
+     
 }
 
 int count_of_Airport()

@@ -57,3 +57,4 @@ void upload_to_file();
 
 void edit_airport(Airport* current);
 void edit_airport_mode();
+void print_all_routes();

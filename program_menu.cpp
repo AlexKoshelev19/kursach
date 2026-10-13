@@ -61,6 +61,7 @@ void greeting_menu(){
         "Найти маршрут с пересадками",
         "Вывод одного маршрута",
         "Вывести все аэропорты",
+        "Вывести все маршруты",
         "Работать с файлами" };
         
     int size = sizeof(page_choice) / sizeof(page_choice[0]);
@@ -79,7 +80,8 @@ void greeting_menu(){
             case 7: route_mode(7);   break;          // маршрут с пересадками
             case 8: route_mode(8);   break;          // вывод одного маршрута
             case 9: print_all_airports(); break;          // вывод аэропортов
-            case 10:file_mode(); break;
+            case 10:print_all_routes();
+            case 11:file_mode(); break;
             case -1: break;
             default: break;
         }
@@ -265,11 +267,18 @@ void route_mode(int code) {
     }
     cout << message << endl;
     do{
-        Airport* dep_ptr = input_airport("\nВведите название аэропорта отправления: ");
-        if (dep_ptr == nullptr) return;
-
-        Airport* arr_ptr = input_airport("\nВведите название аэропорта назначения: ");
-        if (arr_ptr == nullptr) return;
+        Airport* dep_ptr;
+        Airport* arr_ptr;
+        if(code != 8){
+            dep_ptr = input_airport("\nВведите название аэропорта отправления: ");
+            if (dep_ptr == nullptr) return;
+            arr_ptr = input_airport("\nВведите название аэропорта назначения: ");
+            if (arr_ptr == nullptr) return;
+        }
+        else{
+            Airport* arr_ptr = input_airport("\nВведите название аэропорта, аэропорты которго вы хотите вывести: ");
+            if (arr_ptr == nullptr) return;
+        }
 
         switch (code) {
             case 3: if (create_route_mode(dep_ptr, arr_ptr) == false) continue;
@@ -278,7 +287,7 @@ void route_mode(int code) {
             case 5: delete_route(dep_ptr, arr_ptr); break; //удаление маршрута
             case 6: if(is_direct_route(dep_ptr, arr_ptr) == true) break; //определение прямого маршрута между аэропортами
             case 7: search_route(dep_ptr, arr_ptr); break;//определение маршрута между аэропортами с пересадками
-            case 8: cout << "здесь будет вывод маршрута"; break;
+            case 8: print_routes(dep_ptr); break;
 
         }
         c = getch();
@@ -318,6 +327,10 @@ void edit_airport_mode() {
     getch();
     system("cls");
 }
+
+
+
+
 
 
 
