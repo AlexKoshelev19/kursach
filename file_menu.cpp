@@ -4,7 +4,7 @@ void download_from_file()
 {
     cout << "Введите имя входного файла: ";
     string file_name;
-    cin >> file_name;
+    getline(cin, file_name);
 
     ifstream fin(file_name);
 
@@ -34,7 +34,7 @@ void download_from_file()
         fields[i] = line.substr(start);      // последнее поле
 
         if (i == 3) {
-            create_airport(fields[0], fields[1], fields[2], fields[3]);
+            create_airport(fields[0], fields[1], fields[2], fields[3], true);
         }
     }
 
@@ -56,16 +56,16 @@ void download_from_file()
         if (i != 3) continue;                // строка повреждена
         Airport* temp_dep = find_Airport(fields[0]);
         if (temp_dep == nullptr) {
-            create_airport(fields[0], "NULL", "NULL", "NULL");
+            create_airport(fields[0], "NULL", "NULL", "NULL", true);
             temp_dep = find_Airport(fields[0]);
         }
 
         Airport* temp_arr = find_Airport(fields[1]);
         if (temp_arr == nullptr) {
-            create_airport(fields[1], "NULL", "NULL", "NULL");
+            create_airport(fields[1], "NULL", "NULL", "NULL", true);
             temp_arr = find_Airport(fields[1]);
         }
-        create_route(temp_dep, temp_arr, fields[2], fields[3]);
+        create_route(temp_dep, temp_arr, fields[2], fields[3], true);
     }
     fin.close();
     cout << "Данные успешно загружены.\n нажмите любую кнопку";
