@@ -227,7 +227,9 @@ void print_routes(Airport* dep_airport) {
         cout << "Прибытие: " << temp->arr_airport_ptr->name << endl;
         cout << "Дальность: " << temp->distance << endl;
         cout << "Время полета: " << temp->flight_time << endl;
+        cout << "-------------------------------------------------------" << endl;
         temp = temp->next_route;
+
     }
 }
 
@@ -236,7 +238,7 @@ void print_all_routes(){
     cout << "-------------------------------------------------------" << endl;
     while(temp != nullptr){
         print_routes(temp);
-        cout << "-------------------------------------------------------" << endl;
+
         temp = temp->next_airport;
     }
      
@@ -373,7 +375,7 @@ void search_route(Airport* departure, Airport* arrival)
 }
 
 
-void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
+bool delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
 {
     if (dep_airport == nullptr) return;
 
@@ -386,7 +388,7 @@ void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
             delete deleted;
         }
         dep_airport->routes = nullptr;
-        return;
+        return true;
     }
 
     // Удаляем ОДИН конкретный маршрут
@@ -400,12 +402,20 @@ void delete_route(Airport* dep_airport, Airport* arr_airport = nullptr)
             } else {
                 prev->next_route = temp->next_route;     // удаляем из середины/конца
             }
+            cout << "Маршрут: \n";
+            cout << "\tОтправление: " << temp->dep_airport_ptr->name << endl;
+            cout << "\tПрибытие: " << temp->arr_airport_ptr->name << endl;
+            cout << "\tДальность: " << temp->distance << endl;
+            cout << "\tВремя полета: " << temp->flight_time << endl;
+            cout << "успешно удален!";
             delete temp;
-            return;
+            getch();
+            return true;
         }
         prev = temp;
         temp = temp->next_route;
-    }    
+    }
+    return false;
 }
 
 void delete_airport(Airport* name_airport)
@@ -415,13 +425,13 @@ void delete_airport(Airport* name_airport)
     Airport* current = main_ptr;
     while (current != nullptr) {
         if (current != name_airport) {
-            delete_route(current, name_airport);  // удалить один конкретный маршрут
+            bool flag = delete_route(current, name_airport);  // удалить один конкретный маршрут
         }
         current = current->next_airport;
     }
 
     // Удаляем все исходящие маршруты
-    delete_route(name_airport);   // arr_airport по умолчанию = nullptr
+    bool flag = delete_route(name_airport);   // arr_airport по умолчанию = nullptr
 
     // Удаляем аэропорт из списка
     if (main_ptr == name_airport) {

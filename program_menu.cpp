@@ -159,8 +159,6 @@ void create_airport_mode()
 
 bool create_route_mode(Airport* dep_airport_ptr, Airport* arr_airport_ptr)
 {
-
-
     cout << endl << "Введите расстояние между аэропортами: ";
     string distance = good_scan(is_valid_digit);
     if (distance == "exit") return false;
@@ -191,7 +189,6 @@ void delete_airplane_mode()
 {
     Airport* temp = input_airport("Введите название аэропорта, который вы хотите удалить: ");
     if (temp == nullptr){system("cls"); return; }  // пользователь выбрал выход
-
     delete_airport(temp);
     cout << "Аэропорт удалён.\n";
     system("cls");
@@ -284,7 +281,8 @@ void route_mode(int code) {
             case 3: if (create_route_mode(dep_ptr, arr_ptr) == false) continue;
                 else break;
             case 4: cout << "Здесь будет редактирование маршрута"; break;
-            case 5: delete_route(dep_ptr, arr_ptr); break; //удаление маршрута
+            case 5: if (delete_route(dep_ptr, arr_ptr) == false) continue;
+                else break; //удаление маршрута
             case 6: if(is_direct_route(dep_ptr, arr_ptr) == true) break; //определение прямого маршрута между аэропортами
             case 7: search_route(dep_ptr, arr_ptr); break;//определение маршрута между аэропортами с пересадками
             case 8: print_routes(dep_ptr); break;

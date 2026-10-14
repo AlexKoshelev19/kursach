@@ -42,7 +42,7 @@ bool create_route_mode();
 void print_routes(Airport* dep_airport);
 void create_airport_mode();
 void create_airport_mode(Airport* &temp);
-void delete_route(Airport* dep_airport, Airport* arr_airport);
+bool delete_route(Airport* dep_airport, Airport* arr_airport = nullptr);
 void delete_airport(Airport* name_airport);
 bool is_valid_word(const string& word);
 bool is_valid_digit(const string& word);
