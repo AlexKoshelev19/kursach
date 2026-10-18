@@ -145,16 +145,13 @@ void create_airport(string name, string city, string country, string code, bool 
 
 Route* create_route(Airport* dep, Airport* arr, string distance, string flight_time, bool silent)
 {
+    
     if (dep == nullptr || arr == nullptr)
         return nullptr;
 
     for (Route* r = dep->routes; r != nullptr; r = r->next_route) {
         if (r->arr_airport_ptr == arr) {
-            if (!silent) {
-                cout << "Ошибка: маршрут " << dep->name << " → " << arr->name
-                     << " уже существует!\n";
-            }
-            return nullptr; // дубликат — пропускаем
+           return nullptr; // дубликат — пропускаем
         }
     }
 
@@ -214,10 +211,10 @@ bool is_direct_route(Airport* departure, Airport* arrival) //true - yes
 }
 
 void print_Airport(Airport* current) {
-    cout << current->name << endl;
-    cout << current->code << endl;
-    cout << current->city << endl;
-    cout << current->country << endl;
+    cout << "Название: " << current->name << endl;
+    cout << "Код: " << current->code << endl;
+    cout << "Город: " <<current->city << endl;
+    cout << "Страна: " << current->country << endl;
     cout << endl;
 
     cout << "Аэропорты назначения: " << endl;
@@ -241,6 +238,8 @@ void print_all_airports()
     Airport* temp = main_ptr;
     if (temp == nullptr) {
         cout << "Список аэропортов пуст.\n";
+        getch();
+        system("cls");
         return;
     }
     cout << "-------------------------------------------------------" << endl;
@@ -290,8 +289,7 @@ void print_routes(Airport* dep_airport)
 void print_one_route(Airport* dep_airport, Airport* arrival) {
     Route * temp = dep_airport->routes;
     while (temp != nullptr) {
-        if (temp->arr_airport_ptr == arrival) {
-            cout << "-------------------------------------------------------" << endl;
+        if ( temp->arr_airport_ptr == arrival || arrival== nullptr ) {
             cout << "Отправление: " << temp->dep_airport_ptr->name << endl;
             cout << "Прибытие: " << temp->arr_airport_ptr->name << endl;
             cout << "Дальность: " << temp->distance << endl;
@@ -309,7 +307,7 @@ void print_all_routes(){
     bool exist_route = false;
     cout << "-------------------------------------------------------" << endl;
     while(temp != nullptr){
-        print_routes(temp);
+        print_one_route(temp);
         exist_route = true;
         temp = temp->next_airport;
     }
@@ -571,40 +569,49 @@ bool duplicate_airport(Airport* current) {
 }
 
 
-bool edit_route(Airport* dep, Airport* arr) {
-    string dist = "";
-    string time_route = "";
+bool edit_route(Airport* dep, Airport* arr)
+{
+    if (dep == nullptr || arr == nullptr)
+        return false;
+
+    // --- есть ли маршрут dep → arr? ---
     Route* temp_route = dep->routes;
-    while(temp_route != nullptr)
-    {
-        if(temp_route->arr_airport_ptr == arr)
-        {
-            cout << "\nИсходный маршрут:\n";
-            print_one_route(dep, arr);
-
-            cout << "\nВведите дистанцию: ";
-            dist = good_scan(is_valid_digit);
-            temp_route->distance = dist;
-
-            cout << "\nВведите время полета: ";
-            time_route = good_scan(is_valid_digit);
-            temp_route->flight_time = time_route;
-
-             cout << "\nМаршрут изменен: " << endl;
-
-            cout << "-------------------------------------------------------" << endl;
-            cout << "Отправление: " << temp_route->dep_airport_ptr->name << endl;
-            cout << "Прибытие: " << temp_route->arr_airport_ptr->name << endl;
-            cout << "Дальность: " << temp_route->distance << endl;
-            cout << "Время полета: " << temp_route->flight_time << endl;
-            cout << "-------------------------------------------------------" << endl;
-
-
+    while (temp_route != nullptr) {
+        if (temp_route->arr_airport_ptr == arr)
             break;
-
-        }
         temp_route = temp_route->next_route;
     }
+
+    if (temp_route == nullptr) {
+        cout << "Маршрут " << dep->name << " → " << arr->name
+             << " не существует. Нажмите любую клавишу...\n";
+        getch();
+        return false;
+    }
+
+    // --- маршрут найден — можно вводить новые данные ---
+    cout << "\nИсходный маршрут:\n";
+    print_one_route(dep, arr);
+
+    cout << "\nВведите дистанцию: ";
+    string dist = good_scan(is_valid_digit);
+    if (dist == "exit") return false;
+
+    cout << "\nВведите время полета: ";
+    string time_route = good_scan(is_valid_digit);
+    if (time_route == "exit") return false;
+
+    temp_route->distance = dist;
+    temp_route->flight_time = time_route;
+
+    cout << "\nМаршрут изменен:\n";
+    cout << "-------------------------------------------------------\n";
+    cout << "Отправление: " << temp_route->dep_airport_ptr->name << endl;
+    cout << "Прибытие: " << temp_route->arr_airport_ptr->name << endl;
+    cout << "Дальность: " << temp_route->distance << endl;
+    cout << "Время полета: " << temp_route->flight_time << endl;
+    cout << "-------------------------------------------------------\n";
+
     return true;
 }
 

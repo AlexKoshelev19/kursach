@@ -65,7 +65,12 @@ void greeting_menu(){
         "Работать с файлами" };
         
     int size = sizeof(page_choice) / sizeof(page_choice[0]);
-    string message = "Здравствуйте!\n Данная программа позволяет создавать транспортную сеть аэропортов. Вы можете создать отдельно аэропорты и соединять их маршрутами. При первом запуске программе, рекомендую ознакомиться с инструкцией и далее следовать сообщениям на экране.";
+    string message = R"(Данная программа позволяет создавать транспортную сеть аэропортов.
+Вы можете создать отдельно аэропорты и соединять их маршрутами.
+При первом запуске программы рекомендую ознакомиться с инструкцией
+и далее следовать сообщениям на экране.
+Пользуйтесь стрелками вверх и вниз; для подтверждения — Enter, для выхода — Esc.
+)";
     int index=0;
     do{
         index = choice_menu(page_choice, message, size);
@@ -162,6 +167,15 @@ void create_airport_mode()
 
 bool create_route_mode(Airport* dep_airport_ptr, Airport* arr_airport_ptr)
 {
+
+    for (Route* r = dep_airport_ptr->routes; r != nullptr; r = r->next_route) {
+        if (r->arr_airport_ptr == arr_airport_ptr) {
+            cout << "\nМаршрут " << dep_airport_ptr->name << " -> " << arr_airport_ptr->name
+                 << " уже существует. Нажмите любую клавишу для повторного ввода\n";
+            getch();
+            return false;
+        }
+    }
     cout << endl << "Введите расстояние между аэропортами: ";
     string distance = good_scan(is_valid_digit);
     if (distance == "exit") return false;
@@ -170,13 +184,6 @@ bool create_route_mode(Airport* dep_airport_ptr, Airport* arr_airport_ptr)
     string flight_time = good_scan(is_valid_digit);
     if (flight_time == "exit") return false;
 
-    Route* temp = create_route(dep_airport_ptr, arr_airport_ptr, distance, flight_time );
-    if (temp == nullptr) {
-        cout << "Такой маршрут уже существует. нажмите любую клавишу для выхода";
-        getch();
-        return false;
-
-    }
     cout << "Маршрут создан!" << endl;
 
     print_one_route(dep_airport_ptr, arr_airport_ptr);
@@ -304,7 +311,7 @@ Airport* input_airport(const string& prompt)
                 return nullptr;
 
             default:
-                break;
+                continue;
         }
     }
 
@@ -340,8 +347,8 @@ void route_mode(int code) {
         }
 
         switch (code) {
-            case 3: create_route_mode(dep_ptr, arr_ptr); break;
-
+            case 3: if(create_route_mode(dep_ptr, arr_ptr) == true) break;
+                else continue;
             case 4: edit_route(dep_ptr, arr_ptr); break;
 
             case 5: delete_route(dep_ptr, arr_ptr); break;
@@ -363,12 +370,8 @@ int main() {
     SetConsoleOutputCP(65001); 
     SetConsoleCP(65001);
     char c;
-    do{
         system("cls");
-        cout << "Проба пера " << endl;
-        c = getch();
-        if(c == 27)  break; 
+        cout << "Здравствуйте!" << endl;
         greeting_menu();
-    } while(c != 27);
     return 0;
 }

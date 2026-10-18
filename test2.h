@@ -6,6 +6,7 @@
 #include <regex>
 #include <fstream>
 #include <limits>
+#include <time.h>
 using namespace std;
 
 int sum(int a, int b);
@@ -52,6 +53,7 @@ string good_scan(bool (*is_valid)(string&));
 void delete_airplane_mode();
 void download_from_file();
 void print_all_airports();
+void print_all_routes();
 void route_mode(int code);
 Airport* input_airport(const string& prompt);
 void upload_to_file();
@@ -60,6 +62,5 @@ bool duplicate_airport(Airport* current);
 bool duplicate_route(Airport* dep_airport_ptr, Airport* arr_airport_ptr);
 void edit_airport(Airport* current) ;
 void edit_airport_mode();
-void print_all_routes();
-void print_one_route(Airport* dep_airport, Airport* arrival);
+void print_one_route(Airport* dep_airport, Airport* arrival = nullptr);
 string choose_data_file();

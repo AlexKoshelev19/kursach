@@ -2,7 +2,7 @@
 
 void download_from_file()
 {
-    cout << "Введите имя входного файла: ";
+    
     string file_name = choose_data_file();
 
     if (file_name.empty()) {
@@ -78,12 +78,31 @@ void download_from_file()
     system("cls"); return;
 }
 
+string output_file(){
+    string file_name;
+    time_t mytime = time(NULL);
+    struct tm *localTime = localtime(&mytime);
+    int year = localTime->tm_year + 1900; // годы отсчитываются с 1900
+    int month = localTime->tm_mon + 1;    // месяцы от 0 до 11
+    int day = localTime->tm_mday;         // день месяца (1-31)
+    int hour = localTime->tm_hour;        // часы (0-23)
+    int min = localTime->tm_min;          // минуты (0-59)
+    int sec = localTime->tm_sec;          // секунды (0-60)
+    file_name = "file_"+ to_string(year) + "_" + to_string(month) + "_" + to_string(day) + "_" + to_string(hour) +to_string(min) +to_string(sec) + ".txt";
+    return file_name ;
+}
 
 void upload_to_file()
 {
-    cout << "Введите имя выходного файла: ";
-    string file_name;
-    getline(cin, file_name);
+    if(main_ptr == nullptr){
+        cout << "Данных нет, выгружать нечего.";
+        cout << "для выхода в галвное меню нажмите любую кнопку";
+        getch();
+        return;   
+    }
+    
+    string file_name = output_file();
+    
 
     ofstream fout(file_name);
     if (!fout.is_open()) {
@@ -123,6 +142,8 @@ void upload_to_file()
 
     fout.close();
     cout << "Данные успешно сохранены в \"" << file_name << "\".\n";
+    cout << "для выхода в галвное меню нажмите любую кнопку";
+    getch();
 }
 bool is_valid_data_file(const string& file_name)
 {
