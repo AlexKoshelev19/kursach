@@ -59,7 +59,7 @@ void greeting_menu(){
         "Удалить маршрут", 
         "Найти прямой маршрут между аэропортами",
         "Найти маршрут с пересадками",
-        "Вывод одного маршрута",
+        "Вывод одного аэропорта с маршрутами",
         "Вывести все аэропорты",
         "Вывести все маршруты",
         "Работать с файлами" };
@@ -80,7 +80,7 @@ void greeting_menu(){
             case 7: route_mode(7);   break;          // маршрут с пересадками
             case 8: route_mode(8);   break;          // вывод одного маршрута
             case 9: print_all_airports(); break;          // вывод аэропортов
-            case 10:print_all_routes();
+            case 10:print_all_routes(); break;
             case 11:file_mode(); break;
             case -1: break;
             default: break;
@@ -114,8 +114,8 @@ void file_mode()
 void create_airport_mode(Airport* &temp)
 {   char c;
     do {
-
-        string message = "Для создания аэропорта вам необходимо ввести данные в следующие поля: Код аэропорта, название, город, страну ";
+        system("cls");
+        string message = "Для создания аэропорта вам необходимо ввести данные в следующие поля: Код аэропорта, название, город, страну(exit - для выхода) ";
         cout << message << endl;
 
         cout << endl << " Введите название аэропорта: ";
@@ -134,7 +134,7 @@ void create_airport_mode(Airport* &temp)
         cout << endl << " Введите страну аэропорта: ";
         string country_airport = good_scan(is_valid_word);
         if(country_airport == "exit") break;
-        
+
 
         create_airport(name_airport, city_airport, country_airport, code_airport);
 
@@ -146,6 +146,8 @@ void create_airport_mode(Airport* &temp)
     } while (c !=27 );
     system("cls");
 }
+
+
 
 
 void create_airport_mode()
@@ -176,10 +178,10 @@ bool create_route_mode(Airport* dep_airport_ptr, Airport* arr_airport_ptr)
 
     }
     cout << "Маршрут создан!" << endl;
-    print_routes(dep_airport_ptr);
+
+    print_one_route(dep_airport_ptr, arr_airport_ptr);
 
     cout << "нажмите любую клавишу";
-    getch();
 
     system("cls");
     return true;
@@ -188,15 +190,72 @@ bool create_route_mode(Airport* dep_airport_ptr, Airport* arr_airport_ptr)
 
 void delete_airplane_mode()
 {
-    Airport* temp = input_airport("Введите название аэропорта, который вы хотите удалить: ");
-    if (temp == nullptr){system("cls"); return; }  // пользователь выбрал выход
-    delete_airport(temp);
-    cout << "Аэропорт удалён.\n";
+    char c;
+    do {
+        system("cls");
+        Airport* temp = input_airport("Введите название аэропорта, который вы хотите удалить(exit - для выхода): ");
+        if (temp == nullptr){system("cls"); return; }  // пользователь выбрал выход
+        delete_airport(temp);
+        cout << "Аэропорт удалён.\n";
+        cout << "Для продолжения выбранного действия нажмите любую клавишу(esc - выход)";
+        c = getch();
+    } while (c!=27);
     system("cls");
 }
 
+void edit_airport_mode() {
+
+        system("cls");
+        Airport* current = input_airport("\nВведите название аэропорта данные которого вы хотите изменить(exit - для выхода): ");
+        if (current == nullptr) {system("cls"); return; }
+        edit_airport(current);
 
 
+}
+void edit_airport(Airport* current) {
+    Airport* temp = current;
+    char c;
+    string name = current->name;
+    string code = current->code;
+    string country = current->country;
+    string city = current->city;
+    do {
+        system("cls");
+        cout << "Исходный аэропорт: \n";
+        print_Airport(current);
+        cout << "Для редактирования:" << endl;
+
+        cout << endl << " Введите название аэропорта(exit - для выхода): ";
+        string name_airport = good_scan(is_valid_word);
+        if(name_airport == "exit") break;
+        current->name = name_airport;
+        //Проверка на существующий аэропорт
+        cout << endl << " Введите код аэропорта(exit - для выхода): ";
+        string code_airport = good_scan(is_valid_code);
+        if(code_airport == "exit") break;
+        current->code = code_airport;
+
+        cout << endl << " Введите город аэропорта(exit - для выхода): ";
+        string city_airport = good_scan(is_valid_word);
+        if(city_airport == "exit") break;
+        current->city = city_airport;
+
+        cout << endl << " Введите страну аэропорта(exit - для выхода): ";
+        string country_airport = good_scan(is_valid_word);
+        if(country_airport == "exit") break;
+        current->country = country_airport;
+        cout << endl;
+        cout << "Аэропорт изменен: " << endl;
+        print_Airport(temp);
+
+
+        cout << "нажмите любую клавишу чтобы изменить аэропорт(esc - для выхода)" << endl;
+        c = getch();
+
+    } while (c !=27);
+    system("cls");
+
+}
 // Возвращает указатель на аэропорт.
 // Если пользователь выбрал "Выйти" — возвращает nullptr.
 Airport* input_airport(const string& prompt)
@@ -221,7 +280,7 @@ Airport* input_airport(const string& prompt)
                 ptr = find_Airport(name);
                 if (ptr == nullptr) {
                     // пользователь мог создать под другим именем
-                    cout << "Введите название созданного аэропорта: ";
+                    cout << "Введите название созданного аэропорта(exit - для выхода): ";
                     name = good_scan(is_valid_word);
                     if (name == "exit") {
                         system("cls");
@@ -254,79 +313,49 @@ Airport* input_airport(const string& prompt)
 
 
 void route_mode(int code) {
-    string message;
+    string message = "";
     char c;
     switch (code) {
-        case 1: message = ""; break; //удаление маршрута
-        case 2: message = ""; break; //определение прямого маршрута между аэропортами
-        case 3: message = ""; break; //определение маршрута между аэропортами с пересадками
-        case 4: message = "Для создания маршрута вам необходимо ввести данные об аэропортах отправления и назначения, продолжительность полета и расстояние. "; break;
-            //вывод
+        case 3: message = "Для создания маршрута вам необходимо ввести данные об аэропортах отправления и назначения"; break; //удаление маршрута
+        case 4: message = "При редактировании маршрута вам необходимо ввести данные об аэропортах отправления и назначения и изменить продолжительность полета и расстояние. "; break;//определение прямого маршрута между аэропортами
+        case 5: message = "Для удаления маршрута вам необходимо ввести данные об аэропортах отправления и назначения"; break;//определение маршрута между аэропортами с пересадками
+        case 6: message = "Для поиска прямого маршрута вам необходимо ввести данные об аэропортах отправления и назначения"; break;
+        case 7: message = "Для поиска маршрута с пересадками вам необходимо ввести данные об аэропортах отправления и назначения"; break;
     }
-    cout << message << endl;
     do{
+        system("cls");
+        if (!message.empty()) cout << message << endl;
+
         Airport* dep_ptr;
         Airport* arr_ptr;
         if(code != 8){
-            dep_ptr = input_airport("\nВведите название аэропорта отправления: ");
-            if (dep_ptr == nullptr) return;
-            arr_ptr = input_airport("\nВведите название аэропорта назначения: ");
-            if (arr_ptr == nullptr) return;
+            dep_ptr = input_airport("\nВведите название аэропорта отправления(exit - для выхода): ");
+            if (dep_ptr == nullptr) {system("cls"); return;}
+            arr_ptr = input_airport("\nВведите название аэропорта назначения(exit - для выхода): ");
+            if (arr_ptr == nullptr) {system("cls"); return;}
         }
         else{
-            Airport* arr_ptr = input_airport("\nВведите название аэропорта, аэропорты которого вы хотите вывести: ");
-            if (arr_ptr == nullptr) return;
+            arr_ptr = input_airport("\nВведите название аэропорта, аэропорты которого вы хотите вывести(exit - для выхода): ");
+            if (arr_ptr == nullptr) {system("cls"); return;}
         }
 
         switch (code) {
-            case 3: if (create_route_mode(dep_ptr, arr_ptr) == false) continue;
-                else break;
-            case 4: if (!edit_route(dep_ptr, arr_ptr)) continue;
-                break;
-            case 5: if (delete_route(dep_ptr, arr_ptr) == false) continue;
-                 else break; //удаление маршрута
-            case 6: if(is_direct_route(dep_ptr, arr_ptr) == true) break; //определение прямого маршрута между аэропортами
-            case 7: search_route(dep_ptr, arr_ptr); break;//определение маршрута между аэропортами с пересадками
-            case 8: print_routes(dep_ptr); break;
-        }
-        break;
-    }while (true);
+            case 3: create_route_mode(dep_ptr, arr_ptr); break;
 
-    // если все проверки пройдены, запихнуть функцию удаления маршрута
+            case 4: edit_route(dep_ptr, arr_ptr); break;
+
+            case 5: delete_route(dep_ptr, arr_ptr); break;
+                  //удаление маршрута
+            case 6: if(is_direct_route(dep_ptr, arr_ptr) == true) break;
+                else{} //определение прямого маршрута между аэропортами
+            case 7: search_route(dep_ptr, arr_ptr); break;//определение маршрута между аэропортами с пересадками
+            case 8: print_routes(arr_ptr); break;
+        }
+        cout << "Для продолжения выбранного действия нажмите любую клавишу(esc - выход)";
+        c = getch();
+    }while (c!=27);
     system("cls"); return;
 }
-
-
-
-void print_routes(int code){
-
-
-    cout << endl << "Введите название аэропорта отправления: ";
-    string dep_airport = good_scan(is_valid_word);
-    Airport* dep_airport_ptr = find_Airport(dep_airport);
-
-    cout << endl << "Введите название аэропорта назначения: ";
-    string arr_airport  = good_scan(is_valid_word);
-    Airport* arr_airport_ptr = find_Airport(arr_airport);
-
-    switch (code)
-    {
-        case 1: break;
-        case 2: break;
-        case 3: break;
-    }
-
-}
-
-void edit_airport_mode() {
-    Airport* current = input_airport("\nВведите название аэропорта данные которого вы хотите изменить: ");
-    if (current == nullptr) return;
-    edit_airport(current);
-    getch();
-    system("cls");
-}
-
-
 
 
 int main() {
